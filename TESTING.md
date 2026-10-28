@@ -34,4 +34,9 @@ Skriv en rad varje gång du kör listan.
 
 | Datum | Efter vilket steg | Resultat | Kommentar |
 |---|---|---|---|
-| | | | |
+| 2026-10-28 | Före Fas 1 (utgångsläge) | 14/14 OK | Körd av Claude i webbläsaren |
+| 2026-10-28 | Fas 1 steg 1: storage.js | 14/14 OK | |
+| 2026-10-28 | Fas 1 steg 2: recipes.js | 14/14 OK | |
+| 2026-10-28 | Fas 1 steg 3: ui.js | 14/14 OK | |
+| 2026-10-28 | Fas 1 steg 4: main.js, app.js borttagen | 14/14 OK | Sidan laddar js/main.js |
+| 2026-10-28 | Fas 1 steg 5: CSS-städning | 14/14 OK | Uppmätta färger, kanter och avstånd oförändrade. Test 12 även kört med riktigt tangentbord |

@@ -21,26 +21,16 @@ Food for All är en enkel webbapp för att hålla koll på vilka recept hushåll
 
 Det finns inget byggsteg, ingen npm och ingen backend. Kör en enkel lokal server i projektmappen med `python3 -m http.server 8000` och öppna `http://localhost:8000`. Det går **inte** att öppna `index.html` direkt som fil, eftersom webbläsaren då blockerar ES-moduler.
 
-### Filstruktur (nuläge)
+### Filstruktur
 
 ```
 index.html      – sidans struktur
 css/style.css   – all styling
-js/app.js       – ALL logik i en fil (tillfällig startpunkt)
-TESTING.md      – manuell testlista, körs efter varje ändring
-```
-
-`js/app.js` är medvetet en enda fil. Att dela upp den enligt målstrukturen nedan görs steg för steg i kursuppgiften.
-
-### Filstruktur (mål)
-
-```
-index.html      – sidans struktur
-css/style.css   – all styling
-js/main.js      – startpunkt, kopplar ihop UI och data
+js/main.js      – startpunkt, håller appens data och kopplar ihop UI och data
 js/storage.js   – all läsning/skrivning till localStorage
-js/recipes.js   – logik för recept (lägga till, ta bort, sätta omdöme)
-js/ui.js        – rendering av listan och hantering av händelser
+js/recipes.js   – logik för recept (lägga till, ta bort, sätta omdöme, validera)
+js/ui.js        – rendering av listan, hantering av händelser och alla gränssnittstexter
+TESTING.md      – manuell testlista, körs efter varje ändring
 ```
 
 ### Datamodell
@@ -57,7 +47,7 @@ js/ui.js        – rendering av listan och hantering av händelser
 ]
 ```
 
-Nycklarna `p1`, `p2` och `p3` står för **Isabell, Christoffer och Hugo**. Namnen finns bara i gränssnittet (konstanten `PEOPLE` i koden), så de kan bytas utan att sparad data går sönder.
+Nycklarna `p1`, `p2` och `p3` står för **Isabell, Christoffer och Hugo**. Namnen finns bara i gränssnittet (konstanten `PERSON_NAMES` i `ui.js`), så de kan bytas utan att sparad data går sönder.
 
 ## Arkitekturprinciper
 

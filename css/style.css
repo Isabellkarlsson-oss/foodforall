@@ -7,6 +7,7 @@
   --color-border: #ddd6cc;
   --color-primary: #2f6f4f;
   --color-primary-hover: #245a40;
+  --color-on-primary: #ffffff; /* text på färgade knappar */
   --color-danger: #b3261e;
   --color-focus: #1a5fd0;
   --radius: 8px;
@@ -49,15 +50,20 @@ h2 {
   outline-offset: 2px;
 }
 
+/* Gemensam kort-stil för formuläret och receptkorten */
+form,
+.recipe {
+  padding: var(--space);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
 /* ---------- Formulär ---------- */
 form {
   display: flex;
   flex-direction: column;
   gap: calc(var(--space) / 2);
-  padding: var(--space);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
 }
 
 label {
@@ -88,15 +94,20 @@ button {
   padding: 0.5rem 1rem;
 }
 
-button[type="submit"] {
+/* Knapparna ska inte sträckas ut till kortets fulla bredd */
+.button-primary,
+.remove-button {
   align-self: flex-start;
+}
+
+.button-primary {
   border: none;
   background: var(--color-primary);
-  color: #fff;
+  color: var(--color-on-primary);
   font-weight: 600;
 }
 
-button[type="submit"]:hover {
+.button-primary:hover {
   background: var(--color-primary-hover);
 }
 
@@ -108,11 +119,11 @@ button[type="submit"]:hover {
 
 .remove-button:hover {
   background: var(--color-danger);
-  color: #fff;
+  color: var(--color-on-primary);
 }
 
 /* ---------- Receptlistan ---------- */
-#empty-message {
+.empty-message {
   color: var(--color-muted);
 }
 
@@ -130,10 +141,6 @@ button[type="submit"]:hover {
   display: flex;
   flex-direction: column;
   gap: calc(var(--space) * 0.75);
-  padding: var(--space);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
 }
 
 .recipe-link {
@@ -147,10 +154,6 @@ button[type="submit"]:hover {
   display: flex;
   flex-direction: column;
   gap: calc(var(--space) / 2);
-}
-
-.recipe .remove-button {
-  align-self: flex-start;
 }
 
 /* ... och i rad på bredare skärmar */

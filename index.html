@@ -23,20 +23,20 @@
         <!-- Felmeddelanden visas här. role="alert" gör att skärmläsare läser upp dem direkt. -->
         <p id="form-error" class="form-error" role="alert"></p>
 
-        <button type="submit">Lägg till</button>
+        <button type="submit" class="button-primary">Lägg till</button>
       </form>
     </section>
 
-    <!-- Listan med recept fylls i av js/app.js -->
+    <!-- Listan med recept fylls i av js/ui.js -->
     <section aria-labelledby="list-heading">
       <!-- tabindex="-1" låter JS flytta fokus hit när ett recept tagits bort -->
       <h2 id="list-heading" tabindex="-1">Våra recept</h2>
-      <p id="empty-message">Inga recept än. Lägg till det första ovan!</p>
+      <p id="empty-message" class="empty-message">Inga recept än. Lägg till det första ovan!</p>
       <ul id="recipe-list" class="recipe-list"></ul>
     </section>
   </main>
 
   <!-- type="module" gör att koden inte skapar globala variabler. Kräver en lokal server. -->
-  <script type="module" src="js/app.js"></script>
+  <script type="module" src="js/main.js"></script>
 </body>
 </html>
