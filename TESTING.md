@@ -27,6 +27,10 @@ Kör listan efter varje steg i en ändring, så ser du att beteendet inte har ä
 | 12 | Bara tangentbord: Tab genom sidan, lägg till ett recept med Enter, ändra ett omdöme med piltangenterna och ta bort med Enter | Allt går att göra och den blå fokusramen syns hela tiden | ☐ |
 | 13 | Gör fönstret smalt (under 600 px) | Rullgardinsmenyerna hamnar under varandra | ☐ |
 | 14 | Titta i konsolen under hela testet | Inga röda felmeddelanden | ☐ |
+| 15 | Trasig sparad data: klistra in `localStorage.setItem("foodforall.recipes", JSON.stringify([{id:"a",name:"Bra",url:"https://www.ica.se"},{id:"b",name:"Trasig",url:"javascript:alert(1)"}]))` i konsolen och ladda om | "Bra" visas med alla tre menyer på "–", "Trasig" är borta och "Kunde inte hitta länken. Försök igen med en annan länk" visas ovanför listan. Ladda om igen: meddelandet är borta | ☐ |
+| 16 | Sparfel: klistra in `Storage.prototype.setItem = () => { throw new Error("full") }` i konsolen. Försök lägga till ett recept, ändra ett omdöme och ta bort ett recept | Varje gång visas "Kunde inte spara. Försök igen.", texten i formuläret ligger kvar, menyn hoppar tillbaka och receptet finns kvar. Ladda om sidan efteråt för att sluta simulera felet | ☐ |
+| 17 | Öppna appen i två flikar. Lägg till ett recept i flik 1, byt till flik 2. Lägg till ett recept i flik 2 och ladda om flik 1 | Receptet från flik 1 syns direkt i flik 2, och efter omladdning finns båda recepten i flik 1 | ☐ |
+| 18 | Ta reda på datorns IP-adress (`ipconfig getifaddr en0` i Terminal), öppna `http://<ip-adressen>:8000` och lägg till ett recept | Receptet läggs till utan fel. Testdatan där är skild från den på localhost | ☐ |
 
 ## Logg
 
@@ -40,3 +44,7 @@ Skriv en rad varje gång du kör listan.
 | 2026-10-28 | Fas 1 steg 3: ui.js | 14/14 OK | |
 | 2026-10-28 | Fas 1 steg 4: main.js, app.js borttagen | 14/14 OK | Sidan laddar js/main.js |
 | 2026-10-28 | Fas 1 steg 5: CSS-städning | 14/14 OK | Uppmätta färger, kanter och avstånd oförändrade. Test 12 även kört med riktigt tangentbord |
+| 2026-10-28 | Fas 2 steg 6: kontroll av sparad data | 1–15 OK | 16–18 ännu inte byggda |
+| 2026-10-28 | Fas 2 steg 7: sparfel | 1–16 OK | |
+| 2026-10-28 | Fas 2 steg 8: synk mellan flikar | 1–17 OK | |
+| 2026-10-28 | Fas 2 steg 9: reservlösning för id | 18/18 OK | Test 18 även kört på riktigt via http://192.168.45.103:8000 |

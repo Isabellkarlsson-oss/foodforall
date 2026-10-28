@@ -20,13 +20,22 @@ const RATING_OPTIONS = [
   { value: false, optionValue: "false", text: "ogillar" },
 ];
 
-// Felmeddelanden för formuläret, per fält och felkod från validateInput.
+const SAVE_FAILED = "Kunde inte spara. Försök igen.";
+
+// Felmeddelanden för formuläret, per fält och felkod från main.js.
 const ERROR_MESSAGES = {
   name: { empty: "Skriv ett namn på receptet." },
   url: {
     protocol: "Länken måste börja med http:// eller https://.",
     invalid: "Skriv en giltig länk, till exempel https://www.ica.se/recept/...",
   },
+  save: { failed: SAVE_FAILED },
+};
+
+// Meddelanden som visas ovanför receptlistan.
+const LIST_MESSAGES = {
+  removed: "Kunde inte hitta länken. Försök igen med en annan länk",
+  saveFailed: SAVE_FAILED,
 };
 
 const TEXTS = {
@@ -44,6 +53,7 @@ const urlInput = document.querySelector("#recipe-url");
 const formError = document.querySelector("#form-error");
 const list = document.querySelector("#recipe-list");
 const listHeading = document.querySelector("#list-heading");
+const listMessage = document.querySelector("#list-message");
 const emptyMessage = document.querySelector("#empty-message");
 
 // Funktionerna från main.js: onAdd, onRemove och onRate.
@@ -59,6 +69,21 @@ export function initUI(appHandlers) {
 export function renderRecipes(recipes) {
   list.replaceChildren(...recipes.map(createRecipeItem));
   emptyMessage.hidden = recipes.length > 0;
+}
+
+// Visar ett meddelande ovanför listan, t.ex. showListMessage("removed").
+export function showListMessage(key) {
+  listMessage.textContent = LIST_MESSAGES[key];
+}
+
+// Visar felmeddelandet om ändringen inte sparades, annars tas ett gammalt
+// meddelande bort eftersom det inte längre gäller.
+function showSaveResult(saved) {
+  if (saved) {
+    listMessage.textContent = "";
+  } else {
+    showListMessage("saveFailed");
+  }
 }
 
 // Bygger ett receptkort (<li>) med länk, tre omdömesmenyer och ta bort-knapp.
@@ -101,9 +126,17 @@ function createRatingSelect(recipe, personKey) {
   }
   select.value = toOptionValue(recipe.ratings[personKey]);
 
+  // Kom ihåg det sparade valet, så att menyn kan ändras tillbaka om sparandet misslyckas.
+  let savedValue = select.value;
   select.addEventListener("change", () => {
-    handlers.onRate(recipe.id, personKey, fromOptionValue(select.value));
+    const saved = handlers.onRate(recipe.id, personKey, fromOptionValue(select.value));
     // Ingen omritning här: menyn visar redan rätt val, och fokus ska stanna kvar.
+    if (saved) {
+      savedValue = select.value;
+    } else {
+      select.value = savedValue;
+    }
+    showSaveResult(saved);
   });
 
   return select;
@@ -128,7 +161,9 @@ function handleSubmit(event) {
   const error = handlers.onAdd(name, url);
   formError.textContent = error ? ERROR_MESSAGES[error.field][error.code] : "";
   if (error) {
-    (error.field === "name" ? nameInput : urlInput).focus();
+    // Vid sparfel finns inget fält att markera, så fokus stannar där det är.
+    const fieldInputs = { name: nameInput, url: urlInput };
+    fieldInputs[error.field]?.focus();
     return;
   }
 
@@ -141,7 +176,10 @@ function handleRemove(recipe) {
   if (!confirm(TEXTS.confirmRemove(recipe.name))) {
     return;
   }
-  handlers.onRemove(recipe.id);
-  // Knappen som hade fokus är borta, så flytta fokus till listans rubrik.
-  listHeading.focus();
+  const removed = handlers.onRemove(recipe.id);
+  showSaveResult(removed);
+  if (removed) {
+    // Knappen som hade fokus är borta, så flytta fokus till listans rubrik.
+    listHeading.focus();
+  }
 }

@@ -80,10 +80,16 @@ select {
   color: inherit;
 }
 
-.form-error {
+.form-error,
+.list-message {
   margin: 0;
   color: var(--color-danger);
   font-weight: 600;
+}
+
+/* Avstånd till listan bara när det finns ett meddelande */
+.list-message:not(:empty) {
+  margin-bottom: var(--space);
 }
 
 /* ---------- Knappar ---------- */

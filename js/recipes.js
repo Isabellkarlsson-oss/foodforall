@@ -22,10 +22,52 @@ export function validateInput(name, url) {
   return null;
 }
 
+// Skapar ett unikt id. crypto.randomUUID finns bara på säkra adresser
+// (https eller localhost), så på t.ex. http://192.168.1.10:8000 används
+// i stället 16 slumpade byte skrivna som text.
+function createId() {
+  if (typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+  const bytes = crypto.getRandomValues(new Uint8Array(16));
+  return Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+// Gör sparad data säker att använda. Recept som inte är giltiga (saknar namn
+// eller har en ogiltig länk) tas bort, och saknade omdömen fylls i som null.
+// Ger de giltiga recepten och hur många som togs bort.
+export function cleanRecipes(saved) {
+  const recipes = saved.filter(isValidRecipe).map(cleanRecipe);
+  return { recipes, removedCount: saved.length - recipes.length };
+}
+
+// Kontrollerar ett sparat recept med samma regler som formuläret.
+function isValidRecipe(recipe) {
+  return (
+    typeof recipe === "object" &&
+    recipe !== null &&
+    typeof recipe.name === "string" &&
+    typeof recipe.url === "string" &&
+    validateInput(recipe.name.trim(), recipe.url.trim()) === null
+  );
+}
+
+// Returnerar en kopia av receptet med id och ett omdöme per person.
+function cleanRecipe(recipe) {
+  const savedRatings = recipe.ratings ?? {};
+  return {
+    ...recipe,
+    id: typeof recipe.id === "string" && recipe.id !== "" ? recipe.id : createId(),
+    ratings: Object.fromEntries(
+      PERSON_KEYS.map((key) => [key, typeof savedRatings[key] === "boolean" ? savedRatings[key] : null])
+    ),
+  };
+}
+
 // Skapar ett nytt receptobjekt där ingen har svarat än.
 export function createRecipe(name, url) {
   return {
-    id: crypto.randomUUID(),
+    id: createId(),
     name,
     url,
     ratings: Object.fromEntries(PERSON_KEYS.map((key) => [key, null])),
