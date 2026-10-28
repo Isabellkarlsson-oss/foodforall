@@ -1,0 +1,165 @@
+/* ---------- Färger och grundmått (ändra här för att byta tema) ---------- */
+:root {
+  --color-bg: #faf7f2;
+  --color-surface: #ffffff;
+  --color-text: #2b2b2b;
+  --color-muted: #6b6b6b;
+  --color-border: #ddd6cc;
+  --color-primary: #2f6f4f;
+  --color-primary-hover: #245a40;
+  --color-danger: #b3261e;
+  --color-focus: #1a5fd0;
+  --radius: 8px;
+  --space: 1rem;
+}
+
+/* ---------- Grund ---------- */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+main {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: calc(var(--space) * 2) var(--space);
+}
+
+h1 {
+  margin: 0 0 calc(var(--space) * 1.5);
+  color: var(--color-primary);
+}
+
+h2 {
+  font-size: 1.25rem;
+  margin: calc(var(--space) * 2) 0 var(--space);
+}
+
+/* Tydlig fokusram när man använder tangentbordet */
+:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+/* ---------- Formulär ---------- */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--space) / 2);
+  padding: var(--space);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+label {
+  font-weight: 600;
+}
+
+input,
+select {
+  font: inherit;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  color: inherit;
+}
+
+.form-error {
+  margin: 0;
+  color: var(--color-danger);
+  font-weight: 600;
+}
+
+/* ---------- Knappar ---------- */
+button {
+  font: inherit;
+  cursor: pointer;
+  border-radius: var(--radius);
+  padding: 0.5rem 1rem;
+}
+
+button[type="submit"] {
+  align-self: flex-start;
+  border: none;
+  background: var(--color-primary);
+  color: #fff;
+  font-weight: 600;
+}
+
+button[type="submit"]:hover {
+  background: var(--color-primary-hover);
+}
+
+.remove-button {
+  border: 1px solid var(--color-danger);
+  background: transparent;
+  color: var(--color-danger);
+}
+
+.remove-button:hover {
+  background: var(--color-danger);
+  color: #fff;
+}
+
+/* ---------- Receptlistan ---------- */
+#empty-message {
+  color: var(--color-muted);
+}
+
+.recipe-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space);
+}
+
+/* Ett receptkort */
+.recipe {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--space) * 0.75);
+  padding: var(--space);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.recipe-link {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+/* De tre rullgardinsmenyerna: under varandra på mobil ... */
+.ratings {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--space) / 2);
+}
+
+.recipe .remove-button {
+  align-self: flex-start;
+}
+
+/* ... och i rad på bredare skärmar */
+@media (min-width: 600px) {
+  .ratings {
+    flex-direction: row;
+  }
+
+  .ratings select {
+    flex: 1;
+  }
+}

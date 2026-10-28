@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Food for All</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <main>
+    <h1>Food for All</h1>
+
+    <!-- Formulär för att lägga till ett nytt recept -->
+    <section aria-labelledby="add-heading">
+      <h2 id="add-heading">Lägg till recept</h2>
+      <form id="recipe-form" novalidate>
+        <label for="recipe-name">Namn</label>
+        <input id="recipe-name" name="name" type="text" autocomplete="off" required>
+
+        <label for="recipe-url">Länk till receptet</label>
+        <input id="recipe-url" name="url" type="url" placeholder="https://..." autocomplete="off" required>
+
+        <!-- Felmeddelanden visas här. role="alert" gör att skärmläsare läser upp dem direkt. -->
+        <p id="form-error" class="form-error" role="alert"></p>
+
+        <button type="submit">Lägg till</button>
+      </form>
+    </section>
+
+    <!-- Listan med recept fylls i av js/app.js -->
+    <section aria-labelledby="list-heading">
+      <!-- tabindex="-1" låter JS flytta fokus hit när ett recept tagits bort -->
+      <h2 id="list-heading" tabindex="-1">Våra recept</h2>
+      <p id="empty-message">Inga recept än. Lägg till det första ovan!</p>
+      <ul id="recipe-list" class="recipe-list"></ul>
+    </section>
+  </main>
+
+  <!-- type="module" gör att koden inte skapar globala variabler. Kräver en lokal server. -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

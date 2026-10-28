@@ -5,7 +5,7 @@
 Food for All är en enkel webbapp för att hålla koll på vilka recept hushållet gillar.
 
 - En översikt visar alla recept, var och ett med **namn** och **länk** till receptet.
-- För varje recept kan man markera om **person 1, person 2 och person 3** tyckte om det eller inte.
+- För varje recept kan man markera om **Isabell, Christoffer och Hugo** tyckte om det eller inte, med en rullgardinsmeny per person ("Isabell –", "Isabell gillar", "Isabell ogillar").
 - Man kan **lägga till** nya recept (namn + länk) och **ta bort** recept.
 
 **Problemet det löser:** Det är svårt att komma ihåg vilka recept som gick hem hos alla och vilka som inte gjorde det. Appen samlar recepten och allas omdömen på ett ställe, så att det blir lättare att välja vad man ska laga.
@@ -19,7 +19,18 @@ Food for All är en enkel webbapp för att hålla koll på vilka recept hushåll
 | Logik | Vanilla JavaScript (ES-moduler) | Det behövs inget ramverk för den här storleken på app, och det är lätt att förstå och lära sig. |
 | Lagring | `localStorage` i webbläsaren | Det behövs ingen server eller databas. Datan sparas mellan besök. |
 
-Det finns inget byggsteg, ingen npm och ingen backend. Öppna `index.html` i en webbläsare eller kör en enkel lokal server (t.ex. `python3 -m http.server`).
+Det finns inget byggsteg, ingen npm och ingen backend. Kör en enkel lokal server i projektmappen med `python3 -m http.server 8000` och öppna `http://localhost:8000`. Det går **inte** att öppna `index.html` direkt som fil, eftersom webbläsaren då blockerar ES-moduler.
+
+### Filstruktur (nuläge)
+
+```
+index.html      – sidans struktur
+css/style.css   – all styling
+js/app.js       – ALL logik i en fil (tillfällig startpunkt)
+TESTING.md      – manuell testlista, körs efter varje ändring
+```
+
+`js/app.js` är medvetet en enda fil. Att dela upp den enligt målstrukturen nedan görs steg för steg i kursuppgiften.
 
 ### Filstruktur (mål)
 
@@ -46,6 +57,8 @@ js/ui.js        – rendering av listan och hantering av händelser
 ]
 ```
 
+Nycklarna `p1`, `p2` och `p3` står för **Isabell, Christoffer och Hugo**. Namnen finns bara i gränssnittet (konstanten `PEOPLE` i koden), så de kan bytas utan att sparad data går sönder.
+
 ## Arkitekturprinciper
 
 - **Inga globala variabler.** Använd ES-moduler (`type="module"`) och exportera bara det som behövs.
@@ -53,7 +66,7 @@ js/ui.js        – rendering av listan och hantering av händelser
 - **Separera logik och UI.** `recipes.js` arbetar bara med data och rör aldrig DOM:en. `ui.js` sköter all DOM-hantering.
 - **Funktioner ska göra en sak.** Håll dem korta och ge dem beskrivande namn (`addRecipe`, `removeRecipe`, `setRating`).
 - **Behandla data som oföränderlig.** Returnera nya arrayer och objekt i stället för att mutera befintliga.
-- **Validera indata.** Namnet får inte vara tomt och länken måste vara en giltig URL (`new URL(...)`). Visa ett tydligt felmeddelande om något är fel.
+- **Validera indata.** Namnet får inte vara tomt och länken måste vara en giltig URL (`new URL(...)`) som börjar med `http://` eller `https://`. Visa ett tydligt felmeddelande om något är fel.
 - **Säker rendering.** Lägg in användartext med `textContent`, aldrig med `innerHTML`. Länkar öppnas med `rel="noopener noreferrer"`.
 - **Tillgänglighet.** Använd semantisk HTML (`<button>`, `<label>`, `<ul>`) och se till att allt fungerar med tangentbordet.
 - **Svenska i gränssnittet.** Koden (variabelnamn, funktioner) skrivs på engelska.
@@ -66,4 +79,5 @@ js/ui.js        – rendering av listan och hantering av händelser
 - **Ändra inte datamodellen** så att befintlig sparad data går sönder. Om modellen måste ändras ska det finnas en migrering.
 - **Ändra inte antalet personer** (tre stycken) eller vad de heter utan att fråga.
 - **Ta inte bort eller skriv om** fungerande funktionalitet som inte hör till uppgiften.
+- **Ändra inte beteendet vid refaktorering.** Kör `TESTING.md` efter varje steg och uppdatera listan om en ny funktion läggs till.
 - **Committa eller pusha inte** utan att användaren ber om det. Committa aldrig `.DS_Store` eller andra systemfiler.
