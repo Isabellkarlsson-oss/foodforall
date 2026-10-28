@@ -13,6 +13,10 @@
     <!-- Formulär för att lägga till ett nytt recept -->
     <section aria-labelledby="add-heading">
       <h2 id="add-heading">Lägg till recept</h2>
+      <!-- novalidate och required behövs båda:
+           novalidate stänger av webbläsarens egna felbubblor, så att våra svenska
+           felmeddelanden från js/ui.js visas i stället.
+           required ligger kvar på fälten så att skärmläsare säger "obligatoriskt". -->
       <form id="recipe-form" novalidate>
         <label for="recipe-name">Namn</label>
         <input id="recipe-name" name="name" type="text" autocomplete="off" required>

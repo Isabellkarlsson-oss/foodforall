@@ -56,6 +56,9 @@ const listHeading = document.querySelector("#list-heading");
 const listMessage = document.querySelector("#list-message");
 const emptyMessage = document.querySelector("#empty-message");
 
+// Fälten i formuläret, per fältnamn i felen från main.js.
+const FIELD_INPUTS = { name: nameInput, url: urlInput };
+
 // Funktionerna från main.js: onAdd, onRemove och onRate.
 let handlers;
 
@@ -63,6 +66,14 @@ let handlers;
 export function initUI(appHandlers) {
   handlers = appHandlers;
   form.addEventListener("submit", handleSubmit);
+  for (const input of Object.values(FIELD_INPUTS)) {
+    input.addEventListener("input", () => {
+      // Felet gäller inte längre när användaren har börjat rätta fältet.
+      if (input.getAttribute("aria-invalid") === "true") {
+        clearFormError();
+      }
+    });
+  }
 }
 
 // Ritar om hela receptlistan.
@@ -159,16 +170,38 @@ function handleSubmit(event) {
   const url = urlInput.value.trim();
 
   const error = handlers.onAdd(name, url);
-  formError.textContent = error ? ERROR_MESSAGES[error.field][error.code] : "";
   if (error) {
-    // Vid sparfel finns inget fält att markera, så fokus stannar där det är.
-    const fieldInputs = { name: nameInput, url: urlInput };
-    fieldInputs[error.field]?.focus();
+    showFormError(error);
     return;
   }
 
+  clearFormError();
   form.reset();
   nameInput.focus();
+}
+
+// Visar felet under formuläret. Gäller felet ett fält markeras fältet som
+// ogiltigt och kopplas till felmeddelandet, så att skärmläsare läser upp
+// felet tillsammans med fältets namn.
+function showFormError(error) {
+  clearFormError();
+  formError.textContent = ERROR_MESSAGES[error.field][error.code];
+  const input = FIELD_INPUTS[error.field];
+  // Vid sparfel finns inget fält att markera, så fokus stannar där det är.
+  if (input) {
+    input.setAttribute("aria-invalid", "true");
+    input.setAttribute("aria-describedby", formError.id);
+    input.focus();
+  }
+}
+
+// Tar bort felmeddelandet och fältens felmarkering.
+function clearFormError() {
+  formError.textContent = "";
+  for (const input of Object.values(FIELD_INPUTS)) {
+    input.removeAttribute("aria-invalid");
+    input.removeAttribute("aria-describedby");
+  }
 }
 
 // Tar bort ett recept efter att användaren bekräftat.
