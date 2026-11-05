@@ -32,6 +32,7 @@ Kör listan efter varje steg i en ändring, så ser du att beteendet inte har ä
 | 17 | Öppna appen i två flikar. Lägg till ett recept i flik 1, byt till flik 2. Lägg till ett recept i flik 2 och ladda om flik 1 | Receptet från flik 1 syns direkt i flik 2, och efter omladdning finns båda recepten i flik 1 | ☐ |
 | 18 | Ta reda på datorns IP-adress (`ipconfig getifaddr en0` i Terminal), öppna `http://<ip-adressen>:8000` och lägg till ett recept | Receptet läggs till utan fel. Testdatan där är skild från den på localhost | ☐ |
 | 19 | Namn "Pasta", länk `hej`. Högerklicka på länkfältet → **Inspektera**. Skriv sedan ett tecken i länkfältet | Först har fältet `aria-invalid="true"` och `aria-describedby="form-error"`. När du skriver försvinner felmeddelandet och båda attributen. (Med VoiceOver, Cmd+F5, läses felet upp tillsammans med fältets namn) | ☐ |
+| 20 | Gör fönstret smalt (under 600 px). Lägg till ett recept med namnet `Superlångtreceptnamnutanmellanslagsomkanskespräckerlayouten` | Namnet bryts på flera rader inuti kortet, och sidan går inte att scrolla i sidled | ☐ |
 
 ## Logg
 
@@ -50,3 +51,4 @@ Skriv en rad varje gång du kör listan.
 | 2026-10-28 | Fas 2 steg 8: synk mellan flikar | 1–17 OK | |
 | 2026-10-28 | Fas 2 steg 9: reservlösning för id | 18/18 OK | Test 18 även kört på riktigt via http://192.168.45.103:8000 |
 | 2026-10-28 | Fas 3 steg 10–11: felmarkering på fälten, kommentar om novalidate/required | 19/19 OK | |
+| 2026-11-05 | Rättelse: långa receptnamn på mobil | 1–5, 8, 13, 14, 20 OK | Övriga tester inte körda, bara CSS ändrad |

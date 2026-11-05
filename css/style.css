@@ -153,6 +153,8 @@ button {
   font-size: 1.125rem;
   font-weight: 600;
   color: var(--color-primary);
+  /* Långa namn utan mellanslag bryts i stället för att gå utanför kortet */
+  overflow-wrap: anywhere;
 }
 
 /* De tre rullgardinsmenyerna: under varandra på mobil ... */

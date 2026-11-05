@@ -3,7 +3,7 @@
 Food for All är en enkel webbapp för att hålla koll på vilka recept alla i hushållet gillar.
 
 - En översikt visar alla recept, var och ett med **namn** och **länk** till receptet.
-- För varje recept kan man markera om **person 1, person 2 och person 3** tyckte om det eller inte.
+- För varje recept kan man markera om **Isabell, Christoffer och Hugo** tyckte om det eller inte, med en rullgardinsmeny per person ("Isabell –", "Isabell gillar", "Isabell ogillar").
 - Man kan **lägga till** nya recept (namn + länk) och **ta bort** recept.
 
 **Problemet det löser:** Det är svårt att komma ihåg vilka recept som gick hem hos alla och vilka som inte gjorde det. Appen samlar recepten och allas omdömen på ett ställe, så att det blir lättare att välja vad man ska laga.
@@ -17,17 +17,27 @@ Food for All är en enkel webbapp för att hålla koll på vilka recept alla i h
 | Logik | Vanilla JavaScript (ES-moduler) | Det behövs inget ramverk för den här storleken på app, och det är lätt att förstå och lära sig. |
 | Lagring | `localStorage` i webbläsaren | Det behövs ingen server eller databas. Datan sparas mellan besök. |
 
-Det finns inget byggsteg, ingen npm och ingen backend. Öppna `index.html` i en webbläsare eller kör en enkel lokal server (t.ex. `python3 -m http.server`).
+Det finns inget byggsteg, ingen npm och ingen backend.
 
-### Filstruktur (mål)
+## Kom igång
+
+1. Starta en lokal server i projektmappen: `python3 -m http.server 8000`
+2. Öppna `http://localhost:8000` i webbläsaren.
+
+Det går **inte** att öppna `index.html` direkt som fil, eftersom webbläsaren då blockerar ES-moduler.
+
+Efter varje ändring körs den manuella testlistan i [TESTING.md](TESTING.md).
+
+### Filstruktur
 
 ```
 index.html      – sidans struktur
 css/style.css   – all styling
-js/main.js      – startpunkt, kopplar ihop UI och data
+js/main.js      – startpunkt, håller appens data och kopplar ihop UI och data
 js/storage.js   – all läsning/skrivning till localStorage
-js/recipes.js   – logik för recept (lägga till, ta bort, sätta omdöme)
-js/ui.js        – rendering av listan och hantering av händelser
+js/recipes.js   – logik för recept (lägga till, ta bort, sätta omdöme, validera)
+js/ui.js        – rendering av listan, hantering av händelser och alla gränssnittstexter
+TESTING.md      – manuell testlista, körs efter varje ändring
 ```
 
 ### Datamodell
@@ -44,6 +54,10 @@ js/ui.js        – rendering av listan och hantering av händelser
 ]
 ```
 
+Nycklarna `p1`, `p2` och `p3` står för **Isabell, Christoffer och Hugo**. Namnen finns bara i gränssnittet (`PERSON_NAMES` i `js/ui.js`).
+
+Datan sparas i varje webbläsare för sig. Två enheter, eller två olika webbläsare, har alltså var sin lista.
+
 ## Arkitekturprinciper
 
 - **Inga globala variabler.** Använd ES-moduler (`type="module"`) och exportera bara det som behövs.
@@ -51,7 +65,7 @@ js/ui.js        – rendering av listan och hantering av händelser
 - **Separera logik och UI.** `recipes.js` arbetar bara med data och rör aldrig DOM:en. `ui.js` sköter all DOM-hantering.
 - **Funktioner ska göra en sak.** Håll dem korta och ge dem beskrivande namn (`addRecipe`, `removeRecipe`, `setRating`).
 - **Behandla data som oföränderlig.** Returnera nya arrayer och objekt i stället för att mutera befintliga.
-- **Validera indata.** Namnet får inte vara tomt och länken måste vara en giltig URL (`new URL(...)`). Visa ett tydligt felmeddelande om något är fel.
+- **Validera indata.** Namnet får inte vara tomt och länken måste vara en giltig URL (`new URL(...)`) som börjar med `http://` eller `https://`. Visa ett tydligt felmeddelande om något är fel.
 - **Säker rendering.** Lägg in användartext med `textContent`, aldrig med `innerHTML`. Länkar öppnas med `rel="noopener noreferrer"`.
 - **Tillgänglighet.** Använd semantisk HTML (`<button>`, `<label>`, `<ul>`) och se till att allt fungerar med tangentbordet.
 - **Svenska i gränssnittet.** Koden (variabelnamn, funktioner) skrivs på engelska.
@@ -64,4 +78,5 @@ js/ui.js        – rendering av listan och hantering av händelser
 - **Ändra inte datamodellen** så att befintlig sparad data går sönder. Om modellen måste ändras ska det finnas en migrering.
 - **Ändra inte antalet personer** (tre stycken) eller vad de heter utan att fråga.
 - **Ta inte bort eller skriv om** fungerande funktionalitet som inte hör till uppgiften.
+- **Ändra inte beteendet vid refaktorering.** Kör `TESTING.md` efter varje steg och uppdatera listan om en ny funktion läggs till.
 - **Committa eller pusha inte** utan att användaren ber om det. Committa aldrig `.DS_Store` eller andra systemfiler.
