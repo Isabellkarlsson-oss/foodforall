@@ -4,14 +4,15 @@
 // Nycklarna för personerna som kan sätta omdömen. Namnen finns bara i ui.js.
 export const PERSON_KEYS = ["p1", "p2", "p3"];
 
-// Kontrollerar formulärets värden. Ger null om allt är okej, annars
-// vilket fält som är fel och varför, t.ex. { field: "url", code: "invalid" }.
+// Kontrollerar formulärets värden. Mellanslag i början och slutet räknas inte.
+// Ger null om allt är okej, annars vilket fält som är fel och varför,
+// t.ex. { field: "url", code: "invalid" }.
 export function validateInput(name, url) {
-  if (name === "") {
+  if (name.trim() === "") {
     return { field: "name", code: "empty" };
   }
   try {
-    const parsed = new URL(url);
+    const parsed = new URL(url.trim());
     // Bara vanliga webblänkar. Stoppar t.ex. "javascript:"-länkar.
     if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
       return { field: "url", code: "protocol" };
@@ -48,15 +49,18 @@ function isValidRecipe(recipe) {
     recipe !== null &&
     typeof recipe.name === "string" &&
     typeof recipe.url === "string" &&
-    validateInput(recipe.name.trim(), recipe.url.trim()) === null
+    validateInput(recipe.name, recipe.url) === null
   );
 }
 
-// Returnerar en kopia av receptet med id och ett omdöme per person.
+// Returnerar en kopia av receptet med id, namn och länk utan mellanslag
+// i början och slutet, och ett omdöme per person.
 function cleanRecipe(recipe) {
   const savedRatings = recipe.ratings ?? {};
   return {
     ...recipe,
+    name: recipe.name.trim(),
+    url: recipe.url.trim(),
     id: typeof recipe.id === "string" && recipe.id !== "" ? recipe.id : createId(),
     ratings: Object.fromEntries(
       PERSON_KEYS.map((key) => [key, typeof savedRatings[key] === "boolean" ? savedRatings[key] : null])
@@ -64,12 +68,13 @@ function cleanRecipe(recipe) {
   };
 }
 
-// Skapar ett nytt receptobjekt där ingen har svarat än.
+// Skapar ett nytt receptobjekt där ingen har svarat än. Mellanslag i början
+// och slutet tas bort från namn och länk.
 export function createRecipe(name, url) {
   return {
     id: createId(),
-    name,
-    url,
+    name: name.trim(),
+    url: url.trim(),
     ratings: Object.fromEntries(PERSON_KEYS.map((key) => [key, null])),
   };
 }

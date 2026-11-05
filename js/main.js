@@ -34,17 +34,20 @@ function updateRecipes(change) {
 }
 
 initUI({
-  // Ger ett fel ({ field, code }), eller null om receptet lades till.
+  // Ger hur det gick:
+  // { status: "added" }            – receptet lades till
+  // { status: "invalid", error }   – fel i formuläret, error är { field, code }
+  // { status: "saveFailed" }       – webbläsaren kunde inte spara
   onAdd(name, url) {
     const error = validateInput(name, url);
     if (error) {
-      return error;
+      return { status: "invalid", error };
     }
     if (!updateRecipes((current) => addRecipe(current, createRecipe(name, url)))) {
-      return { field: "save", code: "failed" };
+      return { status: "saveFailed" };
     }
     renderRecipes(recipes);
-    return null;
+    return { status: "added" };
   },
 
   // Ger true om receptet togs bort.

@@ -81,7 +81,8 @@ select {
 }
 
 .form-error,
-.list-message {
+.list-message,
+.recipe-error {
   margin: 0;
   color: var(--color-danger);
   font-weight: 600;
@@ -155,6 +156,13 @@ button {
   color: var(--color-primary);
   /* Långa namn utan mellanslag bryts i stället för att gå utanför kortet */
   overflow-wrap: anywhere;
+}
+
+/* Sparfel i kortet. När raden är tom tar den negativa marginalen bort kortets
+   mellanrum, så att inget extra luft syns. (Raden döljs inte helt, eftersom
+   skärmläsare då kan missa felet när det dyker upp.) */
+.recipe-error:empty {
+  margin-top: calc(var(--space) * -0.75);
 }
 
 /* De tre rullgardinsmenyerna: under varandra på mobil ... */
