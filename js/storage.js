@@ -2,14 +2,44 @@
 
 const STORAGE_KEY = "foodforall.recipes";
 
-// Läser recepten från localStorage. Ger en tom lista om inget finns
-// eller om den sparade datan är trasig.
+// Hit kopieras sparad data som inte gick att läsa, så att den inte går
+// förlorad när listan sparas nästa gång.
+const BACKUP_KEY = "foodforall.recipes.backup";
+
+// Läser recepten från localStorage. Ger ett av:
+// { status: "ok", recipes }                – inget sparat ger en tom lista
+// { status: "unreadable", backedUp }       – datan gick inte att läsa. backedUp
+//                                            säger om en kopia kunde sparas.
 export function loadRecipes() {
+  let raw;
   try {
-    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    return Array.isArray(saved) ? saved : [];
+    raw = localStorage.getItem(STORAGE_KEY);
   } catch {
-    return [];
+    // Lagringen är blockerad. Då finns inget att läsa, och sparfel visas
+    // när användaren försöker ändra något.
+    return { status: "ok", recipes: [] };
+  }
+  if (raw === null) {
+    return { status: "ok", recipes: [] };
+  }
+  try {
+    const saved = JSON.parse(raw);
+    if (Array.isArray(saved)) {
+      return { status: "ok", recipes: saved };
+    }
+  } catch {
+    // Trasig JSON hanteras som all annan oläslig data nedan.
+  }
+  return { status: "unreadable", backedUp: backupUnreadableData(raw) };
+}
+
+// Sparar en kopia av data som inte gick att läsa. Ger false om det misslyckades.
+function backupUnreadableData(raw) {
+  try {
+    localStorage.setItem(BACKUP_KEY, raw);
+    return true;
+  } catch {
+    return false;
   }
 }
 

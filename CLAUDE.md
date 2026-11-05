@@ -19,7 +19,7 @@ Food for All är en enkel webbapp för att hålla koll på vilka recept hushåll
 | Logik | Vanilla JavaScript (ES-moduler) | Det behövs inget ramverk för den här storleken på app, och det är lätt att förstå och lära sig. |
 | Lagring | `localStorage` i webbläsaren | Det behövs ingen server eller databas. Datan sparas mellan besök. |
 
-Det finns inget byggsteg, ingen npm och ingen backend. Kör en enkel lokal server i projektmappen med `python3 -m http.server 8000` och öppna `http://localhost:8000`. Det går **inte** att öppna `index.html` direkt som fil, eftersom webbläsaren då blockerar ES-moduler.
+Det finns inget byggsteg, ingen npm och ingen backend. Kör en enkel lokal server i projektmappen med `python3 -m http.server 8000 --bind 127.0.0.1` och öppna `http://localhost:8000`. `--bind 127.0.0.1` gör att bara den egna datorn når servern. Utan det kan alla på samma nätverk läsa hela projektmappen, inklusive `.git`. Det går **inte** att öppna `index.html` direkt som fil, eftersom webbläsaren då blockerar ES-moduler.
 
 ### Filstruktur
 
@@ -31,6 +31,7 @@ js/storage.js   – all läsning/skrivning till localStorage
 js/recipes.js   – logik för recept (lägga till, ta bort, sätta omdöme, validera)
 js/ui.js        – rendering av listan, hantering av händelser och alla gränssnittstexter
 TESTING.md      – manuell testlista, körs efter varje ändring
+tests/          – automatiska tester för recipes.js och storage.js, öppnas på http://localhost:8000/tests/
 ```
 
 ### Datamodell
@@ -69,5 +70,5 @@ Nycklarna `p1`, `p2` och `p3` står för **Isabell, Christoffer och Hugo**. Namn
 - **Ändra inte datamodellen** så att befintlig sparad data går sönder. Om modellen måste ändras ska det finnas en migrering.
 - **Ändra inte antalet personer** (tre stycken) eller vad de heter utan att fråga.
 - **Ta inte bort eller skriv om** fungerande funktionalitet som inte hör till uppgiften.
-- **Ändra inte beteendet vid refaktorering.** Kör `TESTING.md` efter varje steg och uppdatera listan om en ny funktion läggs till.
+- **Ändra inte beteendet vid refaktorering.** Öppna `http://localhost:8000/tests/` och kör `TESTING.md` efter varje steg. Lägg till tester i `tests/tests.js` när logiken i `recipes.js` eller `storage.js` ändras, och rader i `TESTING.md` när en ny funktion läggs till.
 - **Committa eller pusha inte** utan att användaren ber om det. Committa aldrig `.DS_Store` eller andra systemfiler.

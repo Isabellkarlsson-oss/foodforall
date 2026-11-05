@@ -2,20 +2,37 @@
 // lagring (storage.js), datalogik (recipes.js) och gränssnitt (ui.js).
 
 import { loadRecipes, saveRecipes, watchRecipesInOtherTabs } from "./storage.js";
-import { validateInput, cleanRecipes, createRecipe, addRecipe, removeRecipe, setRating } from "./recipes.js";
-import { initUI, renderRecipes, showListMessage } from "./ui.js";
+import { validateInput, removeInvalidRecipes, createRecipe, addRecipe, removeRecipe, setRating } from "./recipes.js";
+import { initUI, renderRecipes, showListMessage, RESULT } from "./ui.js";
 
 // Appens aktuella data. Det här är det enda stället där den ändras.
 let recipes = [];
 
-// Läser in sparad data, tar bort trasiga recept och ritar om listan.
+// Läser sparad data och tar bort trasiga recept. Ger recepten och vilket
+// meddelande som ska visas ovanför listan, eller null om allt gick bra.
+function readSavedRecipes() {
+  const loaded = loadRecipes();
+  if (loaded.status === "unreadable") {
+    // Visa en tom lista. Den oläsliga datan finns kvar som kopia om backedUp.
+    return { recipes: [], message: loaded.backedUp ? "unreadable" : "unreadableNoBackup" };
+  }
+  const { recipes: valid, removedCount } = removeInvalidRecipes(loaded.recipes);
+  if (removedCount === 0) {
+    return { recipes: valid, message: null };
+  }
+  // Spara den rensade listan så att meddelandet bara visas en gång. Gick det
+  // inte ligger de trasiga recepten kvar i lagringen, och då säger meddelandet
+  // bara att de inte visas.
+  return { recipes: valid, message: saveRecipes(valid) ? "removed" : "removedNotSaved" };
+}
+
+// Läser in sparad data, visar eventuellt ett meddelande och ritar om listan.
+// Körs när appen startar och när en annan flik har sparat.
 function loadAndRender() {
-  const { recipes: cleaned, removedCount } = cleanRecipes(loadRecipes());
-  recipes = cleaned;
-  if (removedCount > 0) {
-    // Spara den rensade listan så att meddelandet bara visas en gång.
-    saveRecipes(recipes);
-    showListMessage("removed");
+  const { recipes: saved, message } = readSavedRecipes();
+  recipes = saved;
+  if (message) {
+    showListMessage(message);
   }
   renderRecipes(recipes);
 }
@@ -23,43 +40,38 @@ function loadAndRender() {
 // Ändrar datan med en funktion från recipes.js och sparar resultatet direkt,
 // så att ingen ändring kan glömma att sparas. Om sparandet misslyckas behålls
 // den gamla datan, så att det som visas alltid stämmer med det som är sparat.
-// Ger true om ändringen sparades.
-function updateRecipes(change) {
-  const changed = change(recipes);
+// Ger { status: RESULT.DONE } eller { status: RESULT.SAVE_FAILED }.
+function updateRecipes(applyChange) {
+  const changed = applyChange(recipes);
   if (!saveRecipes(changed)) {
-    return false;
+    return { status: RESULT.SAVE_FAILED };
   }
   recipes = changed;
-  return true;
+  return { status: RESULT.DONE };
 }
 
+// Alla tre ger ett svar i formen { status }, se RESULT i ui.js.
 initUI({
-  // Ger hur det gick:
-  // { status: "added" }            – receptet lades till
-  // { status: "invalid", error }   – fel i formuläret, error är { field, code }
-  // { status: "saveFailed" }       – webbläsaren kunde inte spara
   onAdd(name, url) {
     const error = validateInput(name, url);
     if (error) {
-      return { status: "invalid", error };
+      return { status: RESULT.INVALID, error };
     }
-    if (!updateRecipes((current) => addRecipe(current, createRecipe(name, url)))) {
-      return { status: "saveFailed" };
+    const result = updateRecipes((current) => addRecipe(current, createRecipe(name, url)));
+    if (result.status === RESULT.DONE) {
+      renderRecipes(recipes);
     }
-    renderRecipes(recipes);
-    return { status: "added" };
+    return result;
   },
 
-  // Ger true om receptet togs bort.
   onRemove(id) {
-    if (!updateRecipes((current) => removeRecipe(current, id))) {
-      return false;
+    const result = updateRecipes((current) => removeRecipe(current, id));
+    if (result.status === RESULT.DONE) {
+      renderRecipes(recipes);
     }
-    renderRecipes(recipes);
-    return true;
+    return result;
   },
 
-  // Ger true om omdömet sparades.
   onRate(id, personKey, value) {
     return updateRecipes((current) => setRating(current, id, personKey, value));
   },

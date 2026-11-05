@@ -3,6 +3,14 @@
 
 import { PERSON_KEYS } from "./recipes.js";
 
+// Svaren som funktionerna från main.js (onAdd, onRemove och onRate) ger,
+// i formen { status }. Bara DONE räknas som lyckat.
+export const RESULT = {
+  DONE: "done",
+  INVALID: "invalid", // fel i formuläret. Svaret har också error: { field, code }
+  SAVE_FAILED: "saveFailed", // webbläsaren kunde inte spara
+};
+
 // ---------- Texter (all svensk text i gränssnittet som skapas av JS) ----------
 
 // Namnen som visas för varje person. Nycklarna är de som sparas i datan.
@@ -34,6 +42,10 @@ const ERROR_MESSAGES = {
 // Meddelanden som visas ovanför receptlistan.
 const LIST_MESSAGES = {
   removed: "Ett eller flera sparade recept kunde inte läsas in och har tagits bort.",
+  removedNotSaved: "Ett eller flera sparade recept kunde inte läsas in och visas inte.",
+  unreadable: "De sparade recepten kunde inte läsas in. En kopia av dem har sparats i webbläsaren.",
+  unreadableNoBackup:
+    "De sparade recepten kunde inte läsas in, och ingen kopia kunde sparas. Om du lägger till ett recept ersätts de.",
 };
 
 const TEXTS = {
@@ -107,19 +119,26 @@ export function showListMessage(key) {
   listMessage.textContent = LIST_MESSAGES[key];
 }
 
-// Visar i receptkortet om en ändring inte sparades. Felet kopplas till menyn
-// eller knappen som användes, så att skärmläsare läser upp det tillsammans.
-// Lyckades det tas gamla fel bort, både i kortet och ovanför listan.
-function showCardSaveResult(control, cardError, saved) {
+// Tar bort meddelandet ovanför listan. Anropas efter varje ändring som
+// sparades, eftersom ett gammalt meddelande då inte längre gäller.
+function clearListMessage() {
+  listMessage.textContent = "";
+}
+
+// Visar sparfel i receptkortet och kopplar det till menyn eller knappen som
+// användes, så att skärmläsare läser upp felet tillsammans med kontrollen.
+function showCardError(control, cardError) {
+  clearCardError(cardError);
+  cardError.textContent = SAVE_FAILED;
+  control.setAttribute("aria-describedby", cardError.id);
+}
+
+// Tar bort sparfelet i receptkortet och kopplingen till det.
+function clearCardError(cardError) {
+  cardError.textContent = "";
+  // cardError ligger direkt i kortets <li>, så parentElement är hela kortet.
   for (const linked of cardError.parentElement.querySelectorAll("[aria-describedby]")) {
     linked.removeAttribute("aria-describedby");
-  }
-  if (saved) {
-    cardError.textContent = "";
-    listMessage.textContent = "";
-  } else {
-    cardError.textContent = SAVE_FAILED;
-    control.setAttribute("aria-describedby", cardError.id);
   }
 }
 
@@ -175,16 +194,19 @@ function createRatingSelect(recipe, personKey, cardError) {
   select.value = toOptionValue(recipe.ratings[personKey]);
 
   // Kom ihåg det sparade valet, så att menyn kan ändras tillbaka om sparandet misslyckas.
-  let savedValue = select.value;
+  let lastSavedOption = select.value;
   select.addEventListener("change", () => {
-    const saved = handlers.onRate(recipe.id, personKey, fromOptionValue(select.value));
+    const result = handlers.onRate(recipe.id, personKey, fromOptionValue(select.value));
+    const wasSaved = result.status === RESULT.DONE;
     // Ingen omritning här: menyn visar redan rätt val, och fokus ska stanna kvar.
-    if (saved) {
-      savedValue = select.value;
+    if (wasSaved) {
+      lastSavedOption = select.value;
+      clearCardError(cardError);
+      clearListMessage();
     } else {
-      select.value = savedValue;
+      select.value = lastSavedOption;
+      showCardError(select, cardError);
     }
-    showCardSaveResult(select, cardError, saved);
   });
 
   return select;
@@ -206,16 +228,18 @@ function handleSubmit(event) {
   // Skickas vidare som de skrevs. recipes.js bestämmer vad som är giltigt.
   const result = handlers.onAdd(nameInput.value, urlInput.value);
 
-  if (result.status === "invalid") {
-    showFieldError(result.error);
-  } else if (result.status === "saveFailed") {
-    // Inget fält är fel, så texten i formuläret och fokus får vara kvar.
+  if (result.status === RESULT.DONE) {
     clearFormError();
-    formError.textContent = SAVE_FAILED;
-  } else {
-    clearFormError();
+    clearListMessage();
     form.reset();
     nameInput.focus();
+  } else if (result.status === RESULT.INVALID) {
+    showFieldError(result.error);
+  } else {
+    // Sparfel, eller ett svar vi inte känner igen. Inget fält är fel, så
+    // texten i formuläret och fokus får vara kvar.
+    clearFormError();
+    formError.textContent = SAVE_FAILED;
   }
 }
 
@@ -245,11 +269,11 @@ function handleRemove(recipe, removeButton, cardError) {
   if (!confirm(TEXTS.confirmRemove(recipe.name))) {
     return;
   }
-  if (handlers.onRemove(recipe.id)) {
-    listMessage.textContent = "";
+  if (handlers.onRemove(recipe.id).status === RESULT.DONE) {
+    clearListMessage();
     // Knappen som hade fokus är borta, så flytta fokus till listans rubrik.
     listHeading.focus();
   } else {
-    showCardSaveResult(removeButton, cardError, false);
+    showCardError(removeButton, cardError);
   }
 }

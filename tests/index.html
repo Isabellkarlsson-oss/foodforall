@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tester – Food for All</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 48rem; margin: 2rem auto; padding: 0 1rem; line-height: 1.5; }
+    .summary { font-weight: 700; font-size: 1.25rem; }
+    .pass { color: #2f6f4f; }
+    .fail { color: #b3261e; }
+    ul { list-style: none; padding: 0; }
+    li { padding: 0.25rem 0; border-bottom: 1px solid #eee; }
+    pre { margin: 0.25rem 0 0 1.5rem; white-space: pre-wrap; font-size: 0.875rem; }
+  </style>
+</head>
+<body>
+  <h1>Tester för Food for All</h1>
+  <p>Testar datalogiken (<code>js/recipes.js</code>) och lagringen (<code>js/storage.js</code>).
+     Gränssnittet testas för hand med <code>TESTING.md</code>.</p>
+  <p id="summary" class="summary" role="status">Kör testerna …</p>
+  <ul id="results"></ul>
+
+  <script type="module" src="tests.js"></script>
+</body>
+</html>

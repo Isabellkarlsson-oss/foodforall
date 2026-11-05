@@ -21,12 +21,16 @@ Det finns inget byggsteg, ingen npm och ingen backend.
 
 ## Kom igång
 
-1. Starta en lokal server i projektmappen: `python3 -m http.server 8000`
+1. Starta en lokal server i projektmappen: `python3 -m http.server 8000 --bind 127.0.0.1`
+   (`--bind 127.0.0.1` gör att bara din egen dator når servern, inte andra på samma nätverk.)
 2. Öppna `http://localhost:8000` i webbläsaren.
 
 Det går **inte** att öppna `index.html` direkt som fil, eftersom webbläsaren då blockerar ES-moduler.
 
-Efter varje ändring körs den manuella testlistan i [TESTING.md](TESTING.md).
+Efter varje ändring:
+
+1. Öppna `http://localhost:8000/tests/`. Fliktiteln visar till exempel `✓ 20/20` när alla automatiska tester går igenom.
+2. Kör den manuella testlistan i [TESTING.md](TESTING.md) för det som syns i gränssnittet.
 
 ### Filstruktur
 
@@ -38,6 +42,7 @@ js/storage.js   – all läsning/skrivning till localStorage
 js/recipes.js   – logik för recept (lägga till, ta bort, sätta omdöme, validera)
 js/ui.js        – rendering av listan, hantering av händelser och alla gränssnittstexter
 TESTING.md      – manuell testlista, körs efter varje ändring
+tests/          – automatiska tester för recipes.js och storage.js, öppnas på http://localhost:8000/tests/
 ```
 
 ### Datamodell
@@ -78,5 +83,5 @@ Datan sparas i varje webbläsare för sig. Två enheter, eller två olika webbl�
 - **Ändra inte datamodellen** så att befintlig sparad data går sönder. Om modellen måste ändras ska det finnas en migrering.
 - **Ändra inte antalet personer** (tre stycken) eller vad de heter utan att fråga.
 - **Ta inte bort eller skriv om** fungerande funktionalitet som inte hör till uppgiften.
-- **Ändra inte beteendet vid refaktorering.** Kör `TESTING.md` efter varje steg och uppdatera listan om en ny funktion läggs till.
+- **Ändra inte beteendet vid refaktorering.** Öppna `http://localhost:8000/tests/` och kör `TESTING.md` efter varje steg. Lägg till tester i `tests/tests.js` när logiken i `recipes.js` eller `storage.js` ändras, och rader i `TESTING.md` när en ny funktion läggs till.
 - **Committa eller pusha inte** utan att användaren ber om det. Committa aldrig `.DS_Store` eller andra systemfiler.

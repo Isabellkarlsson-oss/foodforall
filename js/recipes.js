@@ -37,8 +37,8 @@ function createId() {
 // Gör sparad data säker att använda. Recept som inte är giltiga (saknar namn
 // eller har en ogiltig länk) tas bort, och saknade omdömen fylls i som null.
 // Ger de giltiga recepten och hur många som togs bort.
-export function cleanRecipes(saved) {
-  const recipes = saved.filter(isValidRecipe).map(cleanRecipe);
+export function removeInvalidRecipes(saved) {
+  const recipes = saved.filter(isValidRecipe).map(normalizeRecipe);
   return { recipes, removedCount: saved.length - recipes.length };
 }
 
@@ -53,9 +53,10 @@ function isValidRecipe(recipe) {
   );
 }
 
-// Returnerar en kopia av receptet med id, namn och länk utan mellanslag
-// i början och slutet, och ett omdöme per person.
-function cleanRecipe(recipe) {
+// Gör ett giltigt sparat recept komplett och enhetligt ("normaliserar" det).
+// Returnerar en kopia med id, namn och länk utan mellanslag i början och
+// slutet, och ett omdöme per person.
+function normalizeRecipe(recipe) {
   const savedRatings = recipe.ratings ?? {};
   return {
     ...recipe,
