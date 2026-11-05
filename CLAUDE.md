@@ -19,12 +19,15 @@ Food for All är en enkel webbapp för att hålla koll på vilka recept hushåll
 | Logik | Vanilla JavaScript (ES-moduler) | Det behövs inget ramverk för den här storleken på app, och det är lätt att förstå och lära sig. |
 | Lagring | `localStorage` i webbläsaren | Det behövs ingen server eller databas. Datan sparas mellan besök. |
 
-Det finns inget byggsteg, ingen npm och ingen backend. Kör en enkel lokal server i projektmappen med `python3 -m http.server 8000 --bind 127.0.0.1` och öppna `http://localhost:8000`. `--bind 127.0.0.1` gör att bara den egna datorn når servern. Utan det kan alla på samma nätverk läsa hela projektmappen, inklusive `.git`. Det går **inte** att öppna `index.html` direkt som fil, eftersom webbläsaren då blockerar ES-moduler.
+Det finns inget byggsteg, ingen npm och ingen backend. Kör den lokala servern i projektmappen med `python3 server.py` och öppna `http://localhost:8000`. `server.py` använder bara Pythons standardbibliotek och gör två saker:
+- Den lyssnar bara på `127.0.0.1`, så att bara den egna datorn når servern. Annars kan alla på samma nätverk läsa hela projektmappen, inklusive `.git`.
+- Den skickar `Cache-Control: no-cache`, så att webbläsaren alltid kontrollerar om en fil har ändrats. Med `python3 -m http.server` kan webbläsaren blanda gamla och nya JS-moduler ur sin cache efter en ändring, och då kraschar appen redan vid start. Det går **inte** att öppna `index.html` direkt som fil, eftersom webbläsaren då blockerar ES-moduler.
 
 ### Filstruktur
 
 ```
 index.html      – sidans struktur
+server.py       – lokal utvecklingsserver (python3 server.py)
 css/style.css   – all styling
 js/main.js      – startpunkt, håller appens data och kopplar ihop UI och data
 js/storage.js   – all läsning/skrivning till localStorage

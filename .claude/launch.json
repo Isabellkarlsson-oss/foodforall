@@ -4,7 +4,7 @@
     {
       "name": "foodforall",
       "runtimeExecutable": "python3",
-      "runtimeArgs": ["-m", "http.server", "8000", "--bind", "127.0.0.1"],
+      "runtimeArgs": ["server.py"],
       "port": 8000
     }
   ]

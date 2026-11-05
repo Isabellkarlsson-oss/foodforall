@@ -21,8 +21,9 @@ Det finns inget byggsteg, ingen npm och ingen backend.
 
 ## Kom igång
 
-1. Starta en lokal server i projektmappen: `python3 -m http.server 8000 --bind 127.0.0.1`
-   (`--bind 127.0.0.1` gör att bara din egen dator når servern, inte andra på samma nätverk.)
+1. Starta den lokala servern i projektmappen: `python3 server.py`
+   - Bara din egen dator når servern, inte andra på samma nätverk.
+   - Servern säger åt webbläsaren att alltid hämta ändrade filer. Med `python3 -m http.server` kan webbläsaren blanda gamla och nya JS-filer, och då slutar appen fungera.
 2. Öppna `http://localhost:8000` i webbläsaren.
 
 Det går **inte** att öppna `index.html` direkt som fil, eftersom webbläsaren då blockerar ES-moduler.

@@ -6,7 +6,7 @@ Datalogik och lagring testas automatiskt på `http://localhost:8000/tests/`. Kö
 
 ## Förberedelse
 
-1. Starta servern i projektmappen: `python3 -m http.server 8000 --bind 127.0.0.1`
+1. Starta servern i projektmappen: `python3 server.py`
 2. Öppna `http://localhost:8000`
 3. Öppna webbläsarens utvecklarverktyg (Cmd+Option+I) och välj fliken **Console**.
 4. Börja från tom lista: skriv `localStorage.clear()` i konsolen och ladda om sidan.
@@ -32,7 +32,7 @@ Datalogik och lagring testas automatiskt på `http://localhost:8000/tests/`. Kö
 | 15 | Trasig sparad data: klistra in `localStorage.setItem("foodforall.recipes", JSON.stringify([{id:"a",name:"Bra",url:"https://www.ica.se"},{id:"b",name:"Trasig",url:"javascript:alert(1)"}]))` i konsolen och ladda om | "Bra" visas med alla tre menyer på "–", "Trasig" är borta och "Ett eller flera sparade recept kunde inte läsas in och har tagits bort." visas ovanför listan. Ladda om igen: meddelandet är borta | ☐ |
 | 16 | Sparfel: klistra in `Storage.prototype.setItem = () => { throw new Error("full") }` i konsolen. Försök lägga till ett recept, ändra ett omdöme och ta bort ett recept | Varje gång visas "Kunde inte spara. Försök igen.": under formuläret när man lägger till, och **i receptkortet** när man ändrar ett omdöme eller tar bort. Texten i formuläret ligger kvar, menyn hoppar tillbaka och receptet finns kvar. Ladda om sidan efteråt för att sluta simulera felet | ☐ |
 | 17 | Öppna appen i två flikar. Lägg till ett recept i flik 1, byt till flik 2. Lägg till ett recept i flik 2 och ladda om flik 1 | Receptet från flik 1 syns direkt i flik 2, och efter omladdning finns båda recepten i flik 1 | ☐ |
-| 18 | Stoppa servern (Ctrl+C) och starta den **tillfälligt** öppen för nätverket: `python3 -m http.server 8000 --bind 0.0.0.0`. Ta reda på datorns IP-adress (`ipconfig getifaddr en0` i Terminal), öppna `http://<ip-adressen>:8000` och lägg till ett recept. Starta sedan om servern med `--bind 127.0.0.1` igen | Receptet läggs till utan fel. Testdatan där är skild från den på localhost | ☐ |
+| 18 | Stoppa servern (Ctrl+C) och starta den **tillfälligt** öppen för nätverket: `python3 -m http.server 8000 --bind 0.0.0.0`. Ta reda på datorns IP-adress (`ipconfig getifaddr en0` i Terminal), öppna `http://<ip-adressen>:8000` och lägg till ett recept. Starta sedan om servern med `python3 server.py` igen | Receptet läggs till utan fel. Testdatan där är skild från den på localhost | ☐ |
 | 19 | Namn "Pasta", länk `hej`. Högerklicka på länkfältet → **Inspektera**. Skriv sedan ett tecken i länkfältet | Först har fältet `aria-invalid="true"` och `aria-describedby="form-error"`. När du skriver försvinner felmeddelandet och båda attributen. (Med VoiceOver, Cmd+F5, läses felet upp tillsammans med fältets namn) | ☐ |
 | 20 | Gör fönstret smalt (under 600 px). Lägg till ett recept med namnet `Superlångtreceptnamnutanmellanslagsomkanskespräckerlayouten` | Namnet bryts på flera rader inuti kortet, och sidan går inte att scrolla i sidled | ☐ |
 | 21 | Namn med bara mellanslag (`   `), länk `https://www.ica.se`. Sedan namn `  Tacos  ` med samma länk | Först "Skriv ett namn på receptet.". Sedan läggs receptet till som "Tacos", utan mellanslagen | ☐ |
