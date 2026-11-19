@@ -1,49 +1,73 @@
-## Vad projektet gör
+# Food for All
 
-Food for All är en enkel webbapp för att hålla koll på vilka recept alla i hushållet gillar.
+En webbapp där ett hushåll samlar sina recept och markerar vem som gillade vad, så att det blir lättare att välja vad man ska laga.
 
-- En översikt visar alla recept, var och ett med **namn** och **länk** till receptet.
-- För varje recept kan man markera om **Isabell, Christoffer och Hugo** tyckte om det eller inte, med en rullgardinsmeny per person ("Isabell –", "Isabell gillar", "Isabell ogillar").
-- Man kan **lägga till** nya recept (namn + länk) och **ta bort** recept.
+**Live:** Ingen deployad version. Appen körs lokalt från repot: [github.com/Isabellkarlsson-oss/foodforall](https://github.com/Isabellkarlsson-oss/foodforall)
 
-**Problemet det löser:** Det är svårt att komma ihåg vilka recept som gick hem hos alla och vilka som inte gjorde det. Appen samlar recepten och allas omdömen på ett ställe, så att det blir lättare att välja vad man ska laga.
+## Vad det gör
 
-## Teknikstack och varför
-
-| Del | Val | Varför |
-|-----|-----|--------|
-| Struktur | HTML5 | Det enklaste sättet att bygga en webbsida. Det fungerar direkt i webbläsaren. |
-| Utseende | CSS (en fil, ingen preprocessor) | Det räcker för en liten app och kräver inget byggsteg. |
-| Logik | Vanilla JavaScript (ES-moduler) | Det behövs inget ramverk för den här storleken på app, och det är lätt att förstå och lära sig. |
-| Lagring | `localStorage` i webbläsaren | Det behövs ingen server eller databas. Datan sparas mellan besök. |
-
-Det finns inget byggsteg, ingen npm och ingen backend.
+Du lägger till recept med namn och länk, och de visas i en lista där länken öppnar receptet. För varje recept väljer Isabell, Christoffer och Hugo var för sig om de gillade det eller inte i en rullgardinsmeny. Du kan också ta bort recept. Allt sparas i webbläsaren och finns kvar nästa gång du öppnar appen.
 
 ## Kom igång
 
-1. Starta den lokala servern i projektmappen: `python3 server.py`
-   - Bara din egen dator når servern, inte andra på samma nätverk.
-   - Servern säger åt webbläsaren att alltid hämta ändrade filer. Med `python3 -m http.server` kan webbläsaren blanda gamla och nya JS-filer, och då slutar appen fungera.
-2. Öppna `http://localhost:8000` i webbläsaren.
+### Krav
 
-Det går **inte** att öppna `index.html` direkt som fil, eftersom webbläsaren då blockerar ES-moduler.
+- Python 3.7 eller senare. Behövs bara för den lokala servern, och använder inga paket utöver standardbiblioteket.
+- En modern webbläsare, till exempel Chrome, Firefox, Safari eller Edge.
+- Inga externa tjänster, konton eller API-nycklar.
 
-Efter varje ändring:
+### Installation
 
-1. Öppna `http://localhost:8000/tests/`. Fliktiteln visar till exempel `✓ 20/20` när alla automatiska tester går igenom.
+```bash
+git clone https://github.com/Isabellkarlsson-oss/foodforall
+cd foodforall
+```
+
+Inget mer behöver installeras. Det finns ingen npm, inget byggsteg och inga beroenden.
+
+### Konfiguration
+
+Ingen konfiguration behövs, och det finns ingen `.env`-fil. Servern använder port 8000. Om den porten är upptagen kan du välja en annan:
+
+```bash
+python3 server.py 8001
+```
+
+### Kör projektet
+
+```bash
+python3 server.py
+```
+
+Öppna sedan `http://localhost:8000` i webbläsaren. Avsluta servern med Ctrl+C.
+
+- Bara din egen dator når servern, inte andra på samma nätverk.
+- Servern säger åt webbläsaren att alltid kontrollera om en fil har ändrats. Med `python3 -m http.server` kan webbläsaren blanda gamla och nya JS-filer ur sin cache, och då slutar appen fungera.
+- Det går **inte** att öppna `index.html` direkt som fil, eftersom webbläsaren då blockerar ES-moduler.
+
+### Tester
+
+1. Öppna `http://localhost:8000/tests/` för de automatiska testerna av `recipes.js` och `storage.js`. Fliktiteln visar till exempel `✓ 20/20` när alla går igenom.
 2. Kör den manuella testlistan i [TESTING.md](TESTING.md) för det som syns i gränssnittet.
 
-### Filstruktur
+## Arkitektur
+
+Appen är uppdelad i tre lager som bara pratar med varandra via `main.js`. `storage.js` är den enda filen som läser och skriver i `localStorage`. `recipes.js` innehåller all datalogik (skapa, ta bort, sätta omdöme, validera) och rör aldrig sidan, utan returnerar alltid nya listor i stället för att ändra de gamla. `ui.js` bygger listan, hanterar klick och formulär och innehåller alla svenska texter. `main.js` håller appens data, och varje ändring sparas direkt. Om sparandet misslyckas behålls den gamla datan, så att det som visas alltid stämmer med det som är sparat.
 
 ```
-index.html      – sidans struktur
-css/style.css   – all styling
-js/main.js      – startpunkt, håller appens data och kopplar ihop UI och data
-js/storage.js   – all läsning/skrivning till localStorage
-js/recipes.js   – logik för recept (lägga till, ta bort, sätta omdöme, validera)
-js/ui.js        – rendering av listan, hantering av händelser och alla gränssnittstexter
-TESTING.md      – manuell testlista, körs efter varje ändring
-tests/          – automatiska tester för recipes.js och storage.js, öppnas på http://localhost:8000/tests/
+foodforall/
+├── index.html        # sidans struktur
+├── server.py         # lokal utvecklingsserver
+├── css/
+│   └── style.css     # all styling
+├── js/
+│   ├── main.js       # startpunkt, håller datan och kopplar ihop lagren
+│   ├── storage.js    # all läsning och skrivning till localStorage
+│   ├── recipes.js    # datalogik för recept, utan DOM
+│   └── ui.js         # rendering, händelser och alla gränssnittstexter
+├── tests/            # automatiska tester som körs i webbläsaren
+├── TESTING.md        # manuell testlista
+└── CLAUDE.md         # instruktioner till Claude Code
 ```
 
 ### Datamodell
@@ -60,29 +84,27 @@ tests/          – automatiska tester för recipes.js och storage.js, öppnas p
 ]
 ```
 
-Nycklarna `p1`, `p2` och `p3` står för **Isabell, Christoffer och Hugo**. Namnen finns bara i gränssnittet (`PERSON_NAMES` i `js/ui.js`).
+Nycklarna `p1`, `p2` och `p3` står för Isabell, Christoffer och Hugo. Namnen finns bara i gränssnittet (`PERSON_NAMES` i `js/ui.js`), så de kan bytas utan att sparad data går sönder.
 
-Datan sparas i varje webbläsare för sig. Två enheter, eller två olika webbläsare, har alltså var sin lista.
+## Teknisk stack
 
-## Arkitekturprinciper
+| Komponent | Val | Anledning |
+|-----------|-----|-----------|
+| Struktur | HTML5 | Det enklaste sättet att bygga en webbsida, och det fungerar direkt i webbläsaren. |
+| Utseende | CSS (en fil, ingen preprocessor) | Det räcker för en liten app och kräver inget byggsteg. |
+| Logik | Vanilla JavaScript (ES-moduler) | Ett ramverk behövs inte för en app av den här storleken, och koden blir lätt att förstå. |
+| Lagring | `localStorage` i webbläsaren | Ingen server eller databas behövs, och datan sparas mellan besök. |
+| Lokal server | Python, bara standardbiblioteket | Ger rätt cache-inställningar och når bara den egna datorn, utan att något behöver installeras. |
 
-- **Inga globala variabler.** Använd ES-moduler (`type="module"`) och exportera bara det som behövs.
-- **All lagring sker i ett lager.** Bara `storage.js` får använda `localStorage`. Övrig kod går via dess funktioner.
-- **Separera logik och UI.** `recipes.js` arbetar bara med data och rör aldrig DOM:en. `ui.js` sköter all DOM-hantering.
-- **Funktioner ska göra en sak.** Håll dem korta och ge dem beskrivande namn (`addRecipe`, `removeRecipe`, `setRating`).
-- **Behandla data som oföränderlig.** Returnera nya arrayer och objekt i stället för att mutera befintliga.
-- **Validera indata.** Namnet får inte vara tomt och länken måste vara en giltig URL (`new URL(...)`) som börjar med `http://` eller `https://`. Visa ett tydligt felmeddelande om något är fel.
-- **Säker rendering.** Lägg in användartext med `textContent`, aldrig med `innerHTML`. Länkar öppnas med `rel="noopener noreferrer"`.
-- **Tillgänglighet.** Använd semantisk HTML (`<button>`, `<label>`, `<ul>`) och se till att allt fungerar med tangentbordet.
-- **Svenska i gränssnittet.** Koden (variabelnamn, funktioner) skrivs på engelska.
+## Begränsningar
 
-## Saker agenten INTE ska göra
+- **Datan finns bara i en webbläsare.** Två enheter, eller två olika webbläsare, har var sin lista. Det finns ingen synkning.
+- **Datan kan försvinna.** Den rensas om man tömmer webbläsarens webbplatsdata, och det finns ingen export eller backup.
+- **Personerna är fasta.** Det är alltid tre personer, och för att byta namn måste man ändra i koden.
+- **Ingen deployad version.** Appen körs bara lokalt via `server.py`.
+- **Testerna körs för hand.** De automatiska testerna öppnas i webbläsaren, och det finns ingen CI som kör dem vid varje push.
+- **Proof of concept.** Appen är byggd för ett hushåll och är inte gjord för många användare eller stora mängder recept.
 
-- **Lägg inte till externa beroenden** (npm-paket, CDN-bibliotek, ramverk) utan att fråga först.
-- **Byt inte lagringslösning.** Använd inte en databas, backend eller molntjänst i stället för `localStorage` utan att fråga.
-- **Inför inget byggsteg** (Vite, Webpack, TypeScript osv.) utan att fråga.
-- **Ändra inte datamodellen** så att befintlig sparad data går sönder. Om modellen måste ändras ska det finnas en migrering.
-- **Ändra inte antalet personer** (tre stycken) eller vad de heter utan att fråga.
-- **Ta inte bort eller skriv om** fungerande funktionalitet som inte hör till uppgiften.
-- **Ändra inte beteendet vid refaktorering.** Öppna `http://localhost:8000/tests/` och kör `TESTING.md` efter varje steg. Lägg till tester i `tests/tests.js` när logiken i `recipes.js` eller `storage.js` ändras, och rader i `TESTING.md` när en ny funktion läggs till.
-- **Committa eller pusha inte** utan att användaren ber om det. Committa aldrig `.DS_Store` eller andra systemfiler.
+## Utvecklat med
+
+Claude Code (agentdriven utveckling) som del av kursen Next-Generation Software Development with AI.
